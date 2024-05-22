@@ -1,7 +1,7 @@
 from bson import ObjectId
 from fastapi import APIRouter, HTTPException, status
 from ..database import tasks_collection
-from ..models import Task
+from ..models import Task, TaskUpdate
 from typing import List
 
 router = APIRouter(
@@ -81,3 +81,33 @@ async def get_task(id: str):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Task not found"
         )
+
+
+@router.put("/{id}", response_model=Task)
+async def update_task(id: str, update_data: TaskUpdate):
+    # Check if the task exists
+    existing_task = tasks_collection.find_one({"_id": ObjectId(id)})
+    if existing_task is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Task not found"
+        )
+
+    # Update the task with the provided data
+    task = {k: v for k, v in update_data.dict().items() if v is not None}
+
+    if len(task) > 0:
+
+        tasks_collection.update_one({"_id": ObjectId(id)}, {"$set": task})
+        updated_task = tasks_collection.find_one({"_id": ObjectId(id)})
+        return Task(**updated_task)
+
+
+@router.delete("/{id}")
+async def delete_task(id: str):
+    res = tasks_collection.delete_one({"_id": ObjectId(id)})
+    if res.deleted_count == 0:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to delete task with id {id}",
+        )
+    return "Task was successfully deleted"

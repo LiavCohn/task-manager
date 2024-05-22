@@ -9,7 +9,7 @@ app.include_router(tasks.router)
 
 @app.get("/")
 async def root():
-    return {"message": "Welcome to the homepage! ww"}
+    return {"message": "Welcome to the homepage!"}
 
 
 if __name__ == "__main__":

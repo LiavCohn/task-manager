@@ -43,7 +43,7 @@ class ObjectIdStr(str):
 
 
 class Task(BaseModel):
-    id: Optional[ObjectIdStr] = Field(alias="_id")
+    # id: Optional[ObjectIdStr] = Field(alias="_id")
     project_id: ObjectIdStr
     name: str
     description: str
@@ -53,6 +53,14 @@ class Task(BaseModel):
 
     class Config:
         allow_population_by_field_name = True
+
+
+class TaskUpdate(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    assigned_users: Optional[List[ObjectIdStr]] = None
+    due_date: Optional[datetime] = None
+    status: Optional[str] = None
 
 
 class Comment(BaseModel):
