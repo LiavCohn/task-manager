@@ -1,10 +1,12 @@
 from fastapi import FastAPI
 import uvicorn
-from .routers import tasks
+from .routers import tasks, auth
+
 
 app = FastAPI()
 
 app.include_router(tasks.router)
+app.include_router(auth.router)
 
 
 @app.get("/")
